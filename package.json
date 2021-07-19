@@ -1,0 +1,72 @@
+{
+  "name": "tfa-input-ts",
+  "description": "Cool tfa-input component using React with Typescript",
+  "version": "1.0.0",
+  "author": "diananem",
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": "diananem/tfa-input-ts",
+  "keywords": [
+    "react",
+    "typescript",
+    "tfa",
+    "input"
+  ],
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "types"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "lint": "tsdx lint",
+    "test": "echo \"No test specified\"",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "arrowParens": "always",
+    "trailingComma": "es5"
+  },
+  "module": "dist/tfa-input-ts.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/tfa-input-ts.cjs.production.min.js",
+      "limit": "5 KB"
+    },
+    {
+      "path": "dist/tfa-input-ts.esm.js",
+      "limit": "5 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^5.0.1",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "csstype": "^3.0.7",
+    "size-limit": "^5.0.1",
+    "tsdx": "^0.14.1"
+  },
+  "dependencies": {
+    "goober": "^2.0.35"
+  }
+}
