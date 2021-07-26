@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { setup, styled } from 'goober';
 
 setup(React.createElement);
@@ -27,12 +27,9 @@ const Number = styled('div')`
   &:first-child {
     margin-left: 0px;
   }
-  &:last-child {
-    margin-right: 0px;
-  }
 `;
 
-const StyledInput = styled('input')`
+const StyledInput = styled('input', React.forwardRef)<{ left: number }>`
   position: absolute;
   z-index: 1;
   height: 100%;
@@ -45,12 +42,13 @@ const StyledInput = styled('input')`
   display: block;
 
   &:focus {
-    width: 35px;
+    width: 31px;
     border: 1px solid #23d9d9;
     box-shadow: 0 0 5px #23d9d9 inset;
     border-radius: 3px;
     overflow: hidden;
-    height: 50px;
+    height: 48px;
+    left: ${({ left = 0 }) => `${left}px`};
   }
 `;
 
@@ -59,22 +57,12 @@ interface TfaInputProps {
   autoFocus?: boolean;
 }
 
-type InputChar = string | undefined;
-
-const EMPTY_NUMBER: InputChar = undefined;
-
-const initialState: InputChar[] = [
-  EMPTY_NUMBER,
-  EMPTY_NUMBER,
-  EMPTY_NUMBER,
-  EMPTY_NUMBER,
-  EMPTY_NUMBER,
-  EMPTY_NUMBER,
-];
-
-// Left align for the input
-function getInputPosition(firstNullIndex: number) {
-  let left = 45 * firstNullIndex;
+/**
+ * This function calculates position of the input.
+ * The component uses only 1 input that we're moving through all 6 cells.
+ */
+function getInputPosition(firstNullIndex: number): number {
+  let left = 47 * firstNullIndex;
   // Need to add additional left px if we enter after "-"
   if (firstNullIndex > 2) {
     left += 15;
@@ -82,17 +70,31 @@ function getInputPosition(firstNullIndex: number) {
   return left;
 }
 
-const TfaInput: React.FC<TfaInputProps> = ({ onSubmit, autoFocus = false }) => {
-  const [code, setCode] = useState<InputChar[]>([...initialState]);
-  const [inputValue, setInputValue] = useState('');
-
-  let firstNullIndex = code.findIndex((code) => !code);
-  // If all numbers is entered we need allow to delete start
-  // From the last number
-  if (firstNullIndex === -1) {
-    firstNullIndex = 5;
-  }
+export const TfaInput: React.FC<TfaInputProps> = ({
+  onSubmit,
+  autoFocus = false,
+}) => {
+  const [code, setCode] = React.useState<string[]>([]);
   const inputEl = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const isFullCode = code.length === 6;
+
+    if (isFullCode) {
+      try {
+        inputEl?.current?.blur();
+
+        onSubmit?.(code.join(''));
+      } catch {
+        /**
+         * In case if submit has triggered an error - we should clean up the input
+         * E.g. the API call has returned "incorrect 2fa number"
+         */
+        setCode([]);
+        inputEl?.current?.focus();
+      }
+    }
+  }, [code]);
 
   return (
     <Container>
@@ -104,70 +106,38 @@ const TfaInput: React.FC<TfaInputProps> = ({ onSubmit, autoFocus = false }) => {
       <Number>{code[4]}</Number>
       <Number>{code[5]}</Number>
       <StyledInput
-        className="tfa-input"
-        type="tel"
-        autoFocus={autoFocus}
         autoComplete="off"
-        style={{
-          left: `${getInputPosition(firstNullIndex)}px`,
-        }}
+        autoFocus={autoFocus}
+        className="tfa-input"
+        left={getInputPosition(code.length > 5 ? 5 : code.length)}
         ref={inputEl}
-        onChange={async ({ target: { value } }) => {
-          if (!/[0-9]/.test(value)) {
+        type="tel"
+        onChange={({ target: { value } }) => {
+          const isNumber = /[0-9]/.test(value);
+          if (!isNumber) {
             return;
           }
-          // If code was copy pasted all at once
-          if (value.length === 6) {
-            setCode([...value]);
-            try {
-              if (inputEl && inputEl.current) {
-                inputEl.current.blur();
-              }
-              await onSubmit(value);
-            } catch {
-              setCode([...initialState]);
-              if (inputEl && inputEl.current) {
-                inputEl.current.focus();
-              }
-            }
-          } else {
-            code[firstNullIndex] = value;
-            setCode([...code]);
-          }
-          const isTheLastNumber = firstNullIndex === 5;
-          if (isTheLastNumber) {
-            try {
-              if (inputEl && inputEl.current) {
-                inputEl.current.blur();
-              }
-              await onSubmit(code.join(''));
-            } catch {
-              setCode([...initialState]);
-              if (inputEl && inputEl.current) {
-                inputEl.current.focus();
-              }
-            }
-          }
-          setInputValue('');
+
+          setCode((prevValue) => {
+            const newValue = [...prevValue, ...value.split('')].slice(0, 6);
+
+            return newValue;
+          });
         }}
-        value={inputValue}
+        // We set empty string value to keep input empty during entering the numbers
+        value={''}
         onKeyDown={(e: React.KeyboardEvent) => {
           const { key } = e;
+          const updatedCode = [...code];
 
           if (key === 'Backspace' || key === 'Delete') {
-            if (firstNullIndex === 0) return;
-            if (code[5]) {
-              code[5] = EMPTY_NUMBER;
-              setCode([...code]);
-              return;
-            }
-            code[firstNullIndex - 1] = EMPTY_NUMBER;
-            setCode([...code]);
+            if (code.length === 0) return;
+
+            updatedCode.pop();
+            setCode(updatedCode);
           }
         }}
       />
     </Container>
   );
 };
-
-export default TfaInput;
