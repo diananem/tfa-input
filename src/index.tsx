@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { setup, styled } from 'goober';
+import * as CSS from 'csstype';
 
 setup(React.createElement);
 
@@ -52,9 +53,14 @@ const StyledInput = styled('input', React.forwardRef)<{ left: number }>`
   }
 `;
 
+type StyleType = string | CSS.Properties;
+
 interface TfaInputProps {
   onSubmit: (code: string) => void;
   autoFocus?: boolean;
+  containerStyle?: StyleType;
+  cellNumberStyle?: StyleType;
+  inputStyle?: StyleType;
 }
 
 /**
@@ -73,6 +79,9 @@ function getInputPosition(firstNullIndex: number): number {
 export const TfaInput: React.FC<TfaInputProps> = ({
   onSubmit,
   autoFocus = false,
+  containerStyle,
+  cellNumberStyle,
+  inputStyle,
 }) => {
   const [code, setCode] = React.useState<string[]>([]);
   const inputEl = React.useRef<HTMLInputElement>(null);
@@ -96,19 +105,35 @@ export const TfaInput: React.FC<TfaInputProps> = ({
     }
   }, [code]);
 
+  const getStyleProps = (style: StyleType) => {
+    const propName = typeof style === 'string' ? 'className' : 'style';
+    return { [propName]: style };
+  };
+
   return (
-    <Container>
-      <Number>{code[0]}</Number>
-      <Number>{code[1]}</Number>
-      <Number>{code[2]}</Number>
+    <Container {...(containerStyle && getStyleProps(containerStyle))}>
+      <Number {...(cellNumberStyle && getStyleProps(cellNumberStyle))}>
+        {code[0]}
+      </Number>
+      <Number {...(cellNumberStyle && getStyleProps(cellNumberStyle))}>
+        {code[1]}
+      </Number>
+      <Number {...(cellNumberStyle && getStyleProps(cellNumberStyle))}>
+        {code[2]}
+      </Number>
       <span style={{ width: '15px', textAlign: 'center' }}> - </span>
-      <Number>{code[3]}</Number>
-      <Number>{code[4]}</Number>
-      <Number>{code[5]}</Number>
+      <Number {...(cellNumberStyle && getStyleProps(cellNumberStyle))}>
+        {code[3]}
+      </Number>
+      <Number {...(cellNumberStyle && getStyleProps(cellNumberStyle))}>
+        {code[4]}
+      </Number>
+      <Number {...(cellNumberStyle && getStyleProps(cellNumberStyle))}>
+        {code[5]}
+      </Number>
       <StyledInput
         autoComplete="off"
         autoFocus={autoFocus}
-        className="tfa-input"
         left={getInputPosition(code.length > 5 ? 5 : code.length)}
         ref={inputEl}
         type="tel"
@@ -137,6 +162,7 @@ export const TfaInput: React.FC<TfaInputProps> = ({
             setCode(updatedCode);
           }
         }}
+        {...(inputStyle && getStyleProps(inputStyle))}
       />
     </Container>
   );
