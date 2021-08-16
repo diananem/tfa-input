@@ -30,7 +30,10 @@ const Number = styled('div')`
   }
 `;
 
-const StyledInput = styled('input', React.forwardRef)<{ left: number }>`
+const StyledInput = styled('input', React.forwardRef)<{
+  left: number;
+  focusColor?: string;
+}>`
   position: absolute;
   z-index: 1;
   height: 100%;
@@ -44,8 +47,9 @@ const StyledInput = styled('input', React.forwardRef)<{ left: number }>`
 
   &:focus {
     width: 31px;
-    border: 1px solid #23d9d9;
-    box-shadow: 0 0 5px #23d9d9 inset;
+    border: ${({ focusColor = '#23d9d9' }) => `1px solid ${focusColor}`};
+    box-shadow: ${({ focusColor = '#23d9d9' }) =>
+      `0 0 5px ${focusColor} inset`};
     border-radius: 3px;
     overflow: hidden;
     height: 48px;
@@ -56,11 +60,13 @@ const StyledInput = styled('input', React.forwardRef)<{ left: number }>`
 type StyleType = string | CSS.Properties;
 
 interface TfaInputProps {
+  value?: string | number;
   onSubmit: (code: string) => void;
   autoFocus?: boolean;
   containerStyle?: StyleType;
   cellNumberStyle?: StyleType;
   inputStyle?: StyleType;
+  focusColor?: string;
 }
 
 /**
@@ -77,13 +83,17 @@ function getInputPosition(firstNullIndex: number): number {
 }
 
 export const TfaInput: React.FC<TfaInputProps> = ({
+  value,
   onSubmit,
   autoFocus = false,
   containerStyle,
   cellNumberStyle,
   inputStyle,
+  focusColor,
 }) => {
-  const [code, setCode] = React.useState<string[]>([]);
+  const [code, setCode] = React.useState<string[]>(
+    value ? value.toString().split('', 6) : []
+  );
   const inputEl = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -132,6 +142,7 @@ export const TfaInput: React.FC<TfaInputProps> = ({
         {code[5]}
       </Number>
       <StyledInput
+        focusColor={focusColor}
         autoComplete="off"
         autoFocus={autoFocus}
         left={getInputPosition(code.length > 5 ? 5 : code.length)}
