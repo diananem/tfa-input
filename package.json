@@ -1,11 +1,11 @@
 {
-  "name": "tfa-input-ts",
+  "name": "tfa-input",
   "description": "Cool tfa-input component using React with Typescript",
   "version": "1.0.0",
   "author": "diananem",
   "license": "MIT",
   "sideEffects": false,
-  "repository": "diananem/tfa-input-ts",
+  "repository": "diananem/tfa-input",
   "keywords": [
     "react",
     "typescript",
@@ -47,14 +47,14 @@
     "arrowParens": "always",
     "trailingComma": "es5"
   },
-  "module": "dist/tfa-input-ts.esm.js",
+  "module": "dist/tfa-input.esm.js",
   "size-limit": [
     {
-      "path": "dist/tfa-input-ts.cjs.production.min.js",
+      "path": "dist/tfa-input.cjs.production.min.js",
       "limit": "5 KB"
     },
     {
-      "path": "dist/tfa-input-ts.esm.js",
+      "path": "dist/tfa-input.esm.js",
       "limit": "5 KB"
     }
   ],
