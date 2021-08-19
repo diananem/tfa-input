@@ -10,6 +10,9 @@ const Container = styled('div')`
   align-items: center;
   position: relative;
   margin-bottom: 5px;
+  * {
+    box-sizing: content-box;
+  }
 `;
 
 const Number = styled('div')`
@@ -32,7 +35,7 @@ const Number = styled('div')`
 
 const StyledInput = styled('input', React.forwardRef)<{
   left: number;
-  focusColor?: string;
+  focuscolor?: string;
 }>`
   position: absolute;
   z-index: 1;
@@ -47,9 +50,9 @@ const StyledInput = styled('input', React.forwardRef)<{
 
   &:focus {
     width: 31px;
-    border: ${({ focusColor = '#23d9d9' }) => `1px solid ${focusColor}`};
-    box-shadow: ${({ focusColor = '#23d9d9' }) =>
-      `0 0 5px ${focusColor} inset`};
+    border: ${({ focuscolor = '#23d9d9' }) => `1px solid ${focuscolor}`};
+    box-shadow: ${({ focuscolor = '#23d9d9' }) =>
+      `0 0 5px ${focuscolor} inset`};
     border-radius: 3px;
     overflow: hidden;
     height: 48px;
@@ -142,7 +145,7 @@ export const TfaInput: React.FC<TfaInputProps> = ({
         {code[5]}
       </Number>
       <StyledInput
-        focusColor={focusColor}
+        focuscolor={focusColor}
         autoComplete="off"
         autoFocus={autoFocus}
         left={getInputPosition(code.length > 5 ? 5 : code.length)}
