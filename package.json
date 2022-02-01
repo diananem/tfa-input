@@ -73,6 +73,7 @@
     "@size-limit/preset-small-lib/**/set-value": ">=4.0.1",
     "@size-limit/preset-small-lib/**/glob-parent": ">=5.1.2",
     "tsdx/**/ansi-regex": "^5.0.1",
-    "tsdx/**/node-notifier": ">=8.0.1"
+    "tsdx/**/node-notifier": ">=8.0.1",
+    "tsdx/**/json-schema": ">=0.4.0"
   }
 }
