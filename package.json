@@ -1,7 +1,7 @@
 {
   "name": "tfa-input",
   "description": "Cool tfa-input component using React with Typescript",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "diananem",
   "license": "MIT",
   "sideEffects": false,
